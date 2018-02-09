@@ -1,0 +1,54 @@
+{
+  "schedules": [
+    {
+      "start_time": "2018-01-15",
+      "end_time": "2018-01-17",
+      "name": "A Midsummer Night's Dream",
+      "containers": [
+        {
+          "env": {
+            "KAFKA_INPUT_CHANNEL": "schedule1-in",
+            "KAFKA_OUTPUT_CHANNEL": "schedule1-out"
+          }
+        },
+        {
+          "env": {
+            "KAFKA_INPUT_CHANNEL": "schedule2-in",
+            "KAFKA_OUTPUT_CHANNEL": "schedule2-out"
+          }
+        },
+        {
+          "env": {
+            "KAFKA_INPUT_CHANNEL": "schedule3-in",
+            "KAFKA_OUTPUT_CHANNEL": "schedule3-out"
+          }
+        }
+      ]
+    },
+    {
+      "start_time": "2018-01-18",
+      "end_time": "2018-01-25",
+      "name": "Prime Time",
+      "containers": [
+        {
+          "env": {
+            "KAFKA_INPUT_CHANNEL": "schedule5-in",
+            "KAFKA_OUTPUT_CHANNEL": "schedule5-out"
+          }
+        },
+        {
+          "env": {
+            "KAFKA_INPUT_CHANNEL": "schedule6-in",
+            "KAFKA_OUTPUT_CHANNEL": "schedule6-out"
+          }
+        },
+        {
+          "env": {
+            "KAFKA_INPUT_CHANNEL": "schedule7-in",
+            "KAFKA_OUTPUT_CHANNEL": "schedule7-out"
+          }
+        }
+      ]
+    }
+  ]
+}

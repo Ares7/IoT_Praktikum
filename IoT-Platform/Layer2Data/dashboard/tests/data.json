@@ -1,0 +1,41 @@
+{
+  "id": "0001-0002-0003-0004",
+
+
+  "devices": {
+    "sensors": [
+
+      {
+        "id": "1",
+
+        "timestamp": 1512380602,
+
+        "values": [
+
+          {
+            "name": "time_elapsed",
+            "value": 30,
+            "unit": "ms"
+          },
+          {
+            "name": "distance",
+            "value": 2,
+            "unit": "cm"
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "timestamp": 1512380608,
+        "values": [
+          {
+            "name": "temperature",
+            "value": 22,
+            "unit": "celcius"
+          }
+        ]
+      }
+    ]
+  }
+
+}

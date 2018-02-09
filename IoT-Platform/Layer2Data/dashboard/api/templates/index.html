@@ -1,0 +1,173 @@
+<html>
+<head>
+<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<link href="//cdn.muicss.com/mui-0.9.35/css/mui.min.css" rel="stylesheet" type="text/css" />
+<script src="//cdn.muicss.com/mui-0.9.35/js/mui.min.js"></script>
+</head>
+<body>
+    <ul class="mui-tabs__bar mui-tabs__bar--justified">
+        <li class="mui--is-active"><a data-mui-toggle="tab" data-mui-controls="pane-justified-1">Container</a></li>
+        <li><a data-mui-toggle="tab" data-mui-controls="pane-justified-2">Scheduler</a></li>
+        <li><a data-mui-toggle="tab" data-mui-controls="pane-justified-3">Tab-3</a></li>
+      </ul>
+      <div class="mui-tabs__pane mui--is-active" id="pane-justified-1">
+          <div id="app">
+            
+            
+          </div>
+      </div>
+      <div class="mui-tabs__pane" id="pane-justified-2">
+          <div id="scheduler">
+            
+              
+            </div>
+
+      </div>
+      <div class="mui-tabs__pane" id="pane-justified-3">Pane-3</div>
+  
+<script type="text/javascript">
+new Vue({
+    el: "#app",
+    data: {
+        message: "Selam",
+        containers:[],
+        container_id:null,
+        kafka_input:null,
+        kafka_output:null
+    },
+    delimiters: ['[[',']]'],
+    created: function(){
+      axios.get("/containers/").then((response)=>{
+        this.containers=response.data.containers;
+        console.log(this.containers)
+      }) 
+
+    },
+    methods:{
+      deleteContainer: function(){
+        axios.delete("/containers/"+this.container_id)
+        .then((response)=>{
+          console.log(response.data)
+          this.containers=response.data.containers
+        })
+      },
+      addContainer:function(){
+        axios.post("/containers/",{
+          KAFKA_IP:"141.40.254.35",
+          KAFKA_INPUT_CHANNEL:this.kafka_input,
+          KAFKA_OUTPUT_CHANNEL:this.kafka_output,
+        })
+        .then((response)=>{
+          this.containers=response.data.containers
+        })
+      }
+
+    },
+    template: ` 
+    <div>
+    <table class="mui-table">
+              <thead>
+              <tr>
+                <th>Name</th>
+                <th>Id</th>
+                <th>KAFKA IP</th>
+                <th>ELASTIC IP</th>
+                <th>KAFKA INPUT CHANNEL</th>
+                <th>KAFKA OUTPUT CHANNEL</th>
+                
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="container in containers">
+                <td>
+                  [[container.name]]
+                </td>
+                <td>
+                  [[container.id]]
+                </td>
+                <td>
+                  [[container.env.KAFKA_IP]]
+                </td>
+                <td>
+                  [[container.env.ELASTIC_IP]]
+                </td>
+                <td>
+                    [[container.env.KAFKA_INPUT_CHANNEL]]
+                  </td>
+                  <td>
+                      [[container.env.KAFKA_OUTPUT_CHANNEL]]
+                    </td>
+                    
+              </tr>
+            </tbody>
+            </table>
+            
+            <input v-model="kafka_input" placeholder="kafka-input-channel">
+            <input v-model="kafka_output" placeholder="kafka-output-channel">
+            
+            
+            <button v-on:click="addContainer" class="mui-btn mui-btn--primary">Add Container</button>
+            <br>
+            <input v-model="container_id" placeholder="Container Id"><button v-on:click="deleteContainer" class="mui-btn mui-btn--danger">Delete Container</button>
+            
+            </div> `
+})
+</script>
+<script>
+  new Vue({
+    el: "#scheduler",
+    data: {
+      message: "scheduler",
+      schedules:[],
+      current_state:null,
+      message:"DEPLOY!"
+    },
+    delimiters: ['[[',']]'],
+  
+    created: function(){
+      axios.get("/schedules")
+      .then((response)=>{
+        this.schedules=response.data.schedules;
+        console.log(this.schedules)
+      })
+    },
+  
+    methods:{
+      addSchedule: function(){
+        axios.post("/schedules/",{
+          schedule:"selam"
+        })
+        .then((response)=>{
+          console.log(response.data)
+        })
+      },
+      deploy: function(){
+      axios.get("/schedules/deploy")
+      .then((response)=>{
+        this.current_state=response.data.containers,
+        this.message=response.data.message
+        
+      })
+    }
+    },
+  
+    template: `<div><ol>
+                  <li v-for="schedule in schedules"> 
+                    [[schedule.name]] --> [[schedule.start_time]] - [[schedule.end_time]]
+                    <ul>
+                      <li v-for="c in schedule.containers">
+                        [[c.env]]
+                      </li>
+                      </ul>
+                  </li>
+                </ol>
+  
+                <button v-on:click="addSchedule" class="mui-btn mui-btn--primary">Add Schedule</button>
+                <br>
+                <button v-on:click="deploy" class="mui-btn mui-btn--danger">[[message]]</button></div>`
+  })
+</script>
+</body>
+
+</html>

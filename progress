@@ -1,0 +1,89 @@
+
+5. same template for whole presentation. 
+6. secure transfer of data is a challenge for the next semester
+
+8. compression is done
+
+
+
+3. how es behaves in failure. write scripts to employ docker to account for a failture of master/slave in env with +dyn ips.
+	https://www.elastic.co/guide/en/elasticsearch/guide/current/cluster-health.html
+	https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-discovery-zen.html
+	https://www.elastic.co/guide/en/elasticsearch/reference/current/_basic_concepts.html
+	https://www.elastic.co/guide/en/elasticsearch/reference/current/_cluster_health.html
+	https://www.elastic.co/guide/en/elasticsearch/guide/current/_add_failover.html
+	https://www.elastic.co/guide/en/elasticsearch/guide/current/_coping_with_failure.html
+
+4. doc
+5. scripts to deploy.
+
+
+
+
+- 6. get the latest data from sensor. (put indx on timestamp)
+	- special use case, not the goal of the praktikum
+
+
+-1. index on time to search faster that unsing simple full-text.
+-2. have timestamp on when the data was generated, not only! when it was arrived (can have both)
+-1. auth (L3 Sergei)
+
+
+
+Elasticsearch is a near real time search platform. What this means is there is a slight latency (normally one second) from the time you index a document until the time it becomes searchable.
+
+Elasticsearch is distributed, which means that indices can be divided into shards and each shard can have zero or more replicas. Each node hosts one or more shards, and acts as a coordinator to delegate operations to the correct shard(s). Rebalancing and routing are done automatically.
+
+Related data is often stored in the same index, which consists of one or more primary shards, and zero or more replica shards. Once an index has been created, the number of primary shards cannot be changed.
+
+* Elasticsearch is "highly available" by design and by default. As you 
+write, shards are replicated across the cluster for better performance and 
+availability. If a primary shard is not available (node goes down, etc), 
+one replica will take over the role of the primary.
+
+
+* Elasticsearch clusters don't have a SPOF master node: any node which is 
+configured to do so (which is a default) can become a master. Thus, if a 
+master goes down, another node will take over the role.
+
+* Given you have enough nodes to place replicas on, your cluster is highly 
+available by default. When a node goes down, unless you're running at 
+capacity, you just launch another one, and it will take on the duties, 
+without human intervention — apart from monitoring.
+
+* Your HTTP requests are automatically re-directed across the nodes in the 
+cluster. If you use a single IP in your application code, though, that is a 
+point of failure if that specific machine would go down. There are 
+multiple approaches how to solve it. Some libraries automatically perform 
+requests in a round-robin fashion and detect healthy nodes. Another 
+approach is to launch an elasticsearch "client node" which would serve as a 
+proxy, automatically discovering new nodes in the cluster, etc. You could 
+also use Nginx or HAproxy in a similar fashion, making sure you 
+periodically update the list of nodes in its configuration.
+
+One node in the cluster is elected to be the master node, which is in charge of managing cluster-wide changes like creating or deleting an index, or adding or removing a node from the cluster. The master node does not need to be involved in document-level changes or searches, which means that having just one master node will not become a bottleneck as traffic grows.
+Every node knows where each document lives and can forward our request directly to the nodes that hold the data we are interested in. Whichever node we talk to manages the process of gathering the response from the node or nodes holding the data and returning the final response to the client. 
+A cluster is identified by a unique name which by default is "elasticsearch". This name is important because a node can only be part of a cluster if the node is set up to join the cluster by its name.
+
+By default, Elasticsearch will place the plug-ins, logs, and—most important—your data in the installation directory. This can lead to unfortunate accidents, whereby the installation directory is accidentally overwritten by a new installation of Elasticsearch. If you aren’t careful, you can erase all your data.
+The best thing to do is relocate your data directory outside the installation location. You can optionally move your plug-in and log directories as well.
+
+Elasticsearch attempts to minimize the extent of data loss by striping entire shards to a drive. That means that Shard 0 will be placed entirely on a single drive. Elasticsearch will not stripe a shard across multiple drives, since the loss of one drive would corrupt the entire shard.This has ramifications for performance: if you are adding multiple drives to improve the performance of a single index, it is unlikely to help since most nodes will only have one shard, and thus one active drive. Multiple data paths only helps if you have many indices/shards on a single node.
+
+gateway.recover_after_nodes: 8
+This will prevent Elasticsearch from starting a recovery until at least eight (data or master) nodes are present.
+Then we tell Elasticsearch how many nodes should be in the cluster, and how long we want to wait for all those nodes:
+
+gateway.expected_nodes: 10
+gateway.recover_after_time: 5m
+
+Elasticsearch is configured to use unicast discovery out of the box to prevent nodes from accidentally joining a cluster. Only nodes running on the same machine will automatically form cluster.
+
+
+While multicast is still provided as a plugin, it should never be used in production. The last thing you want is for nodes to accidentally join your production network, simply because they received an errant multicast ping. There is nothing wrong with multicast per se. Multicast simply leads to silly problems, and can be a bit more fragile (for example, a network engineer fiddles with the network without telling you—and all of a sudden nodes can’t find each other anymore).
+
+To use unicast, you provide Elasticsearch a list of nodes that it should try to contact. When a node contacts a member of the unicast list, it receives a full cluster state that lists all of the nodes in the cluster. It then contacts the master and joins the cluster.
+
+This means your unicast list does not need to include all of the nodes in your cluster. It just needs enough nodes that a new node can find someone to talk to. If you use dedicated masters, just list your three dedicated masters and call it a day. This setting is configured in elasticsearch.yml:
+
+discovery.zen.ping.unicast.hosts: ["host1", "host2:port"]

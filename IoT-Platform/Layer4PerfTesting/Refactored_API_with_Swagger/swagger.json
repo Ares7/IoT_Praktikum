@@ -1,0 +1,311 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "0.0.1",
+    "title": "IoT Platform API"
+  },
+  "host": "localhost:10010",
+  "basePath": "/",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/get_all_boards": {
+      "x-swagger-router-controller": "elasticsearch",
+      "get": {
+        "operationId": "getAllBoards",
+        "description": "get the list of boards",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/GetBoardsListResponse"
+            }
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/get_sensor_data/{board_id}": {
+      "x-swagger-router-controller": "elasticsearch",
+      "get": {
+        "operationId": "getBoard",
+        "description": "get sensors attached to a board",
+        "parameters": [
+          {
+            "name": "board_id",
+            "type": "string",
+            "in": "path",
+            "required": true,
+            "description": "id of the board"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/GetBoardSensorsListResponse"
+            }
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/get_sensor_data/{board_id}/{sensor_id}": {
+      "x-swagger-router-controller": "elasticsearch",
+      "get": {
+        "operationId": "getSensorData",
+        "description": "Returns data form a sensor attached to a board",
+        "parameters": [
+          {
+            "name": "board_id",
+            "type": "string",
+            "in": "path",
+            "required": true,
+            "description": "id of the board"
+          },
+          {
+            "name": "sensor_id",
+            "type": "string",
+            "in": "path",
+            "required": true,
+            "description": "id of the sensor"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/GetBoardSensorsDataListResponse"
+            }
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/get_sensor_data/{board_id}/{sensor_id}/{from}": {
+      "x-swagger-router-controller": "elasticsearch",
+      "get": {
+        "operationId": "getSensorDataFrom",
+        "description": "Returns data form a sensor attached to a board, starting from timestap provided in from parameter",
+        "parameters": [
+          {
+            "name": "board_id",
+            "type": "string",
+            "in": "path",
+            "required": true,
+            "description": "id of the board"
+          },
+          {
+            "name": "sensor_id",
+            "type": "string",
+            "in": "path",
+            "required": true,
+            "description": "id of the sensor"
+          },
+          {
+            "name": "from",
+            "type": "number",
+            "in": "path",
+            "required": true,
+            "description": "Starting timestamp"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/GetBoardSensorsDataListResponse"
+            }
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/get_sensor_data/{board_id}/{sensor_id}/{from}/{to}": {
+      "x-swagger-router-controller": "elasticsearch",
+      "get": {
+        "operationId": "getSensorDataFromTo",
+        "description": "Returns data form a sensor attached to a board, starting from timestap provided in from parameter till the timestamp provided in to parameter",
+        "parameters": [
+          {
+            "name": "board_id",
+            "type": "string",
+            "in": "path",
+            "required": true,
+            "description": "id of the board"
+          },
+          {
+            "name": "sensor_id",
+            "type": "string",
+            "in": "path",
+            "required": true,
+            "description": "id of the sensor"
+          },
+          {
+            "name": "from",
+            "type": "number",
+            "in": "path",
+            "required": true,
+            "description": "Starting timestamp"
+          },
+          {
+            "name": "to",
+            "type": "number",
+            "in": "path",
+            "required": true,
+            "description": "Ending timestamp"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/GetBoardSensorsDataListResponse"
+            }
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/hello": {
+      "x-swagger-router-controller": "hello_world",
+      "get": {
+        "description": "Returns 'Hello' to the caller - verification route for checking if API is online",
+        "operationId": "hello",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "The name of the person to whom to say hello",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/HelloWorldResponse"
+            }
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/swagger": {
+      "x-swagger-pipe": "swagger_raw"
+    }
+  },
+  "definitions": {
+    "GetBoardsListResponse": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "id of the board"
+      }
+    },
+    "GetBoardSensorsListResponse": {
+      "required": [
+        "id",
+        "sensors"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "id of the board"
+        },
+        "sensors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "id of sensors"
+          }
+        }
+      }
+    },
+    "GetBoardSensorsDataListResponse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "number"
+          },
+          "values": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "number"
+              },
+              "unit": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "HelloWorldResponse": {
+      "required": [
+        "message"
+      ],
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "ErrorResponse": {
+      "required": [
+        "message"
+      ],
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
