@@ -15,6 +15,6 @@ MarkupSafe==1.0
 python-telegram-bot==9.0.0
 requests==2.18.4
 six==1.11.0
-urllib3==1.22
+urllib3==1.26.5
 websocket-client==0.46.0
 Werkzeug==0.14.1
