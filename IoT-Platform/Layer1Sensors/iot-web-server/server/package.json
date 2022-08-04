@@ -16,7 +16,7 @@
         "jsonwebtoken": "^5.0.2",
         "lodash": "^3.10.0",
         "mongodb": "^2.1.16",
-        "mongoose": "^5.0.1",
+        "mongoose": "^5.7.5",
         "mongoskin": "^2.1.0",
         "node-static": "^0.7.10",
         "path-to-regexp": "^2.1.0",
